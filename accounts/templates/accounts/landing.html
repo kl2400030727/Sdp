@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PS23 - Sustainable Living Education</title>
+    <!-- Font Awesome for clean icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* ----- GLOBAL RESET & THEME ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        }
+
+        body {
+            background-color: #ffffff;
+            color: #1e2b37;
+            line-height: 1.5;
+        }
+
+        /* Color theme: Green (#2ecc71) + Dark Blue (#2c3e50) */
+        :root {
+            --primary-green: #2ecc71;
+            --primary-dark: #2c3e50;
+            --light-bg: #f9fbfd;
+            --white: #ffffff;
+            --gray-border: #e9ecef;
+            --text-dark: #1e2b37;
+            --text-soft: #4a5b68;
+        }
+
+        h1, h2, h3 {
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* ----- NAVBAR ----- */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 2rem;
+            background-color: var(--white);
+            border-bottom: 1px solid var(--gray-border);
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            letter-spacing: -0.5px;
+        }
+        .logo span {
+            color: var(--primary-green);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover {
+            color: var(--primary-green);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 0.8rem;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--primary-dark);
+            color: var(--primary-dark);
+            padding: 0.4rem 1.2rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-outline:hover {
+            background: var(--primary-dark);
+            color: white;
+            border-color: var(--primary-dark);
+        }
+        .btn-solid {
+            background: var(--primary-green);
+            border: 1.5px solid var(--primary-green);
+            color: white;
+            padding: 0.4rem 1.2rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-solid:hover {
+            background: #27ae60;
+            border-color: #27ae60;
+        }
+
+        /* ----- HERO SECTION ----- */
+        .hero {
+            background: linear-gradient(135deg, rgba(44,62,80,0.75), rgba(46,204,113,0.7)),
+                        url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=1948&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center 30%;
+            padding: 5rem 2rem;
+            color: white;
+            text-align: center;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .hero h1 {
+            font-size: 3.2rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+        }
+        .hero p {
+            font-size: 1.4rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .hero-buttons .btn-solid {
+            background: white;
+            color: var(--primary-dark);
+            border: none;
+            padding: 0.8rem 2rem;
+            font-size: 1.1rem;
+        }
+        .hero-buttons .btn-solid:hover {
+            background: var(--primary-green);
+            color: white;
+        }
+        .hero-buttons .btn-outline {
+            border-color: white;
+            color: white;
+            padding: 0.8rem 2rem;
+            font-size: 1.1rem;
+        }
+        .hero-buttons .btn-outline:hover {
+            background: white;
+            color: var(--primary-dark);
+        }
+
+        /* ----- ABOUT SECTION ----- */
+        .about-section {
+            padding: 4rem 2rem;
+            background-color: var(--light-bg);
+            text-align: center;
+        }
+        .about-section h2 {
+            font-size: 2.5rem;
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+        }
+        .about-section p {
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 1.2rem;
+            color: var(--text-soft);
+        }
+
+        /* ----- FEATURE CARDS ----- */
+        .features-section {
+            padding: 5rem 2rem;
+            background: var(--white);
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2.5rem;
+            margin-top: 2rem;
+        }
+        .feature-card {
+            background: var(--light-bg);
+            padding: 2.5rem 1.8rem;
+            border-radius: 24px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+            transition: transform 0.15s ease;
+            border: 1px solid rgba(46,204,113,0.1);
+        }
+        .feature-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 28px rgba(0,0,0,0.05);
+        }
+        .feature-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(46,204,113,0.1);
+            border-radius: 60px;
+            padding: 12px;
+        }
+        .feature-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .feature-card h3 {
+            font-size: 1.7rem;
+            margin-bottom: 0.8rem;
+            color: var(--primary-dark);
+        }
+        .feature-card p {
+            color: var(--text-soft);
+            font-size: 1rem;
+        }
+
+        /* ----- CALL TO ACTION SECTION ----- */
+        .cta-section {
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .cta-section p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            opacity: 0.9;
+        }
+        .cta-btn {
+            background: var(--primary-green);
+            border: none;
+            padding: 0.9rem 3rem;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 2px solid transparent;
+        }
+        .cta-btn:hover {
+            background: #27ae60;
+            transform: scale(1.02);
+        }
+
+        /* ----- FOOTER ----- */
+        .footer {
+            background: #1b262f;
+            color: #b0c4d9;
+            padding: 2.5rem 2rem;
+            text-align: center;
+        }
+        .footer .container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+        .footer a {
+            color: var(--primary-green);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 700px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .hero h1 {
+                font-size: 2.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="logo">Change<span> by Degrees</span></div>
+        <div class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">Why Us</a>
+            <a href="#">About Us</a>
+            <a href="#">Platform ▼</a>
+            <a href="#">News</a>
+            <a href="#">Conti</a>
+            <div class="auth-buttons">
+                <!-- Fixed: Using your exact URL names from urls.py -->
+                <a href="{% url 'login' %}"><button class="btn-outline">Log in</button></a>
+                <a href="{% url 'register' %}"><button class="btn-solid">Register</button></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Sustainable development education</h1>
+            <p>All your upskilling, engagement and advice in one place — one subscription, one expert partner.</p>
+            <div class="hero-buttons">
+                <a href="#features"><button class="btn-solid">Explore learning</button></a>
+                <a href="{% url 'register' %}"><button class="btn-outline">Join the collective</button></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <section class="about-section" id="about">
+        <div class="container">
+            <h2>Not just climate</h2>
+            <p>Social, environmental, governance and economic topics for a truly sustainable approach. Our platform brings together holistic content for everyone.</p>
+        </div>
+    </section>
+
+    <!-- FEATURE CARDS -->
+    <section class="features-section" id="features">
+        <div class="container">
+            <div class="features-grid">
+                <!-- Card 1: Eco Courses -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="https://img.icons8.com/fluency-systems-regular/96/2ecc71/book-and-leaf.png" alt="Eco courses icon" onerror="this.src='https://img.icons8.com/color/96/000000/leaf.png'">
+                    </div>
+                    <h3>Eco Courses</h3>
+                    <p>Interactive learning modules on sustainability, carbon literacy, and green skills for all levels.</p>
+                </div>
+                <!-- Card 2: Practical Guides -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="https://img.icons8.com/fluency-systems-regular/96/2ecc71/solar-panel.png" alt="sustainable guides icon" onerror="this.src='https://img.icons8.com/color/96/000000/recycle.png'">
+                    </div>
+                    <h3>Practical Guides</h3>
+                    <p>Actionable steps for low-carbon living, circular economy, and sustainable habits at home & work.</p>
+                </div>
+                <!-- Card 3: Community & Support -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="https://img.icons8.com/fluency-systems-regular/96/2ecc71/conference.png" alt="community icon" onerror="this.src='https://img.icons8.com/color/96/000000/group-discussion.png'">
+                    </div>
+                    <h3>Community Hub</h3>
+                    <p>Join a positive collective of experts & peers. Share wins, get advice, and stay motivated.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA SECTION -->
+    <section class="cta-section">
+        <h2>It’s for everyone</h2>
+        <p>C‑suite, manager, intern — we have you covered. Start your sustainable journey today.</p>
+        <a href="{% url 'register' %}"><button class="cta-btn">Create free account</button></a>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div>© 2026 Change by Degrees — Sustainable education for all</div>
+            <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;">
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+                <a href="#">Contact</a>
+                <a href="#">Platform</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Django info note -->
+    <div style="background: #f1f9f1; padding: 1rem; text-align: center; border-top: 1px solid #2ecc71;">
+        <i class="fas fa-leaf" style="color: #2ecc71;"></i> PS23 – Sustainable Living Education Platform
+    </div>
+</body>
+</html>

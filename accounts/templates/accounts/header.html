@@ -1,0 +1,125 @@
+<!-- Toast Container for Django Messages -->
+<div id="toast-container" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none;">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="toast-message {{ message.tags }}" style="background: white; padding: 12px 24px; border-radius: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 12px; pointer-events: auto; animation: slideDown 0.5s ease forwards, fadeOut 0.5s ease 4s forwards; border-left: 5px solid {% if message.tags == 'success' %}#2ecc71{% elif message.tags == 'error' %}#e74c3c{% else %}#3498db{% endif %};">
+                <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %}" style="color: {% if message.tags == 'success' %}#2ecc71{% elif message.tags == 'error' %}#e74c3c{% else %}#3498db{% endif %};"></i>
+                <span style="font-weight: 500; color: #2c3e50;">{{ message }}</span>
+                <button onclick="this.parentElement.remove()" style="background: none; border: none; color: #95a5a6; cursor: pointer; padding: 0 5px;"><i class="fas fa-times"></i></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<style>
+    @keyframes slideDown {
+        from { transform: translateY(-100%); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; visibility: hidden; }
+    }
+</style>
+
+<div class="search-bar">
+    <i class="fas fa-search"></i>
+    <input type="text" placeholder="Search courses..." id="searchInput">
+</div>
+<div class="header-actions">
+    <div class="notification-icon">
+        <i class="fas fa-bell"></i>
+        <span class="notification-badge">3</span>
+    </div>
+    <div class="user-menu" id="userMenu">
+        <div class="user-avatar">{{ user.first_name|first|default:user.username|first }}</div>
+        <span>{{ user.first_name|default:user.username }}</span>
+        <i class="fas fa-chevron-down"></i>
+    </div>
+</div>
+
+<!-- Dropdown Menu -->
+<div class="user-dropdown" id="userDropdown">
+    <a href="{% url 'profile_settings' %}">
+        <i class="fas fa-user-circle"></i> My Profile
+    </a>
+    <a href="{% url 'settings' %}">
+        <i class="fas fa-cog"></i> Settings
+    </a>
+    <hr>
+    <a href="{% url 'login' %}" class="logout-dropdown">
+        <i class="fas fa-sign-out-alt"></i> Logout
+    </a>
+</div>
+
+<style>
+    .user-menu {
+        cursor: pointer;
+        position: relative;
+    }
+
+    .user-dropdown {
+        display: none;
+        position: absolute;
+        top: 60px;
+        right: 20px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        width: 200px;
+        z-index: 1000;
+        overflow: hidden;
+    }
+
+    .user-dropdown a {
+        display: block;
+        padding: 12px 20px;
+        color: #2c3e50;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .user-dropdown a:hover {
+        background: #e8f5e9;
+        color: #2ecc71;
+    }
+
+    .user-dropdown hr {
+        margin: 0;
+        border: none;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .logout-dropdown {
+        color: #e74c3c !important;
+    }
+
+    .logout-dropdown:hover {
+        background: #fee8e8 !important;
+        color: #c0392b !important;
+    }
+
+    .user-dropdown.show {
+        display: block;
+    }
+</style>
+
+<script>
+    // Dropdown toggle functionality
+    const userMenu = document.getElementById('userMenu');
+    const userDropdown = document.getElementById('userDropdown');
+
+    if (userMenu && userDropdown) {
+        userMenu.addEventListener('click', function(event) {
+            event.stopPropagation();
+            userDropdown.classList.toggle('show');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!userMenu.contains(event.target)) {
+                userDropdown.classList.remove('show');
+            }
+        });
+    }
+</script>

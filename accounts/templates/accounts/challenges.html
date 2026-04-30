@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Challenges & Quizzes - Sustainable Living</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/css/dashboard.css' %}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">{% include 'accounts/sidebar.html' %}</aside>
+        <main class="main-content">
+            <header class="top-header">{% include 'accounts/header.html' %}</header>
+            <div class="content-area">
+                <h1><i class="fas fa-trophy" style="color: #2ecc71;"></i> Challenges & Quizzes</h1>
+
+                <!-- Quizzes Section -->
+                <div class="section-header">
+                    <h2><i class="fas fa-pen-alt"></i> Available Quizzes</h2>
+                </div>
+
+                {% if quizzes %}
+                    {% for quiz in quizzes %}
+                    <div class="course-card" style="margin-bottom: 1rem;">
+                        <div class="course-content">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h3>📋 {{ quiz.title }}</h3>
+                                    <p style="color: #6c757d;">{{ quiz.description|default:"Test your knowledge" }}</p>
+                                    <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+                                        <span class="badge-green"><i class="fas fa-star"></i> {{ quiz.points }} points</span>
+                                        <span class="badge-green"><i class="fas fa-question-circle"></i> {{ quiz.question_count }} questions</span>
+                                        <span class="badge-green">{{ quiz.get_difficulty_display }}</span>
+                                    </div>
+                                </div>
+                                <button class="btn-continue" style="width: auto;" onclick="location.href='{% url 'quiz' quiz.id %}'">Start Quiz →</button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="course-card" style="text-align: center; padding: 2rem;">
+                        <p>No quizzes available yet. Admin will add them soon!</p>
+                    </div>
+                {% endif %}
+
+                <!-- Challenges Section -->
+                <div class="section-header" style="margin-top: 2rem;">
+                    <h2><i class="fas fa-fire"></i> Daily Challenges</h2>
+                </div>
+
+                {% if challenges %}
+                    {% for challenge in challenges %}
+                    <div class="course-card" style="margin-bottom: 1rem; background: linear-gradient(135deg, #2c3e50, #1a2b3c); color: white;">
+                        <div class="course-content">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h3 style="color: white;">{{ challenge.title }}</h3>
+                                    <p style="opacity: 0.9;">{{ challenge.description }}</p>
+                                    <div>
+                                        <span class="badge-green">{{ challenge.get_difficulty_display }}</span>
+                                        <span class="badge-green"><i class="fas fa-star"></i> {{ challenge.points }} points</span>
+                                    </div>
+                                </div>
+                                <form method="POST" action="{% url 'complete_challenge' challenge.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-continue" style="background: #2ecc71; color: white; width: auto;">Accept & Complete →</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="course-card" style="text-align: center; padding: 2rem;">
+                        <p>No challenges available yet. Admin will add them soon!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+</body>
+</html>

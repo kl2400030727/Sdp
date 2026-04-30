@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Quizzes - Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/css/dashboard.css' %}">
+    <style>
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+        .modal-content { background: white; border-radius: 20px; padding: 2rem; width: 500px; max-width: 90%; }
+        .modal-content input, .modal-content textarea, .modal-content select { width: 100%; padding: 10px 14px; margin: 8px 0; border: 2px solid #e9ecef; border-radius: 12px; }
+        .btn-save { background: #2ecc71; color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; font-weight: 600; }
+        .btn-cancel { background: #95a5a6; color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; margin-left: 10px; }
+        .quiz-card-admin { background: white; border-radius: 20px; padding: 1.5rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+        .btn-add { background: #2ecc71; color: white; border: none; padding: 10px 25px; border-radius: 25px; cursor: pointer; margin-bottom: 2rem; font-weight: 600; }
+        .btn-edit { background: #3498db; color: white; border: none; padding: 6px 15px; border-radius: 20px; cursor: pointer; margin-right: 5px; }
+        .btn-delete { background: #e74c3c; color: white; border: none; padding: 6px 15px; border-radius: 20px; cursor: pointer; }
+        .message-success { background: #e8f5e9; color: #2ecc71; padding: 1rem; border-radius: 12px; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">{% include 'accounts/sidebar.html' %}</aside>
+        <main class="main-content">
+            <header class="top-header">{% include 'accounts/header.html' %}</header>
+            <div class="content-area">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h1><i class="fas fa-question-circle" style="color: #2ecc71;"></i> Manage Quizzes</h1>
+                    <button class="btn-add" onclick="openAddModal()">
+                        <i class="fas fa-plus"></i> Add New Quiz
+                    </button>
+                </div>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="message-success">
+                            <i class="fas fa-check-circle"></i> {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <div id="quizzesList">
+                    {% for quiz in quizzes %}
+                    <div class="quiz-card-admin">
+                        <div>
+                            <h3>{{ quiz.title }}</h3>
+                            <p>{{ quiz.description|default:"No description" }}</p>
+                            <div>
+                                <span class="badge-green">{{ quiz.get_difficulty_display }}</span>
+                                <span style="margin-left: 10px;">📊 {{ quiz.question_count }} questions</span>
+                                <span style="margin-left: 10px;">⭐ {{ quiz.points }} points</span>
+                            </div>
+                        </div>
+                        <div>
+                            <button class="btn-edit" onclick="openEditModal('{{ quiz.id }}')">Edit</button>
+                            <form method="POST" action="{% url 'delete_quiz' quiz.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-delete" onclick="return confirm('Delete this quiz?')">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p>No quizzes yet. Click "Add New Quiz" to create one.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2 id="modalTitle">Add New Quiz</h2>
+            <form id="quizForm" method="POST">
+                {% csrf_token %}
+                <input type="text" name="title" id="quizTitle" placeholder="Quiz Title" required>
+                <textarea name="description" id="quizDescription" placeholder="Quiz Description" rows="3"></textarea>
+                <select name="difficulty" id="quizDifficulty" required>
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+                <select name="course" id="quizCourse">
+                    <option value="">-- Link to Course (Optional) --</option>
+                    {% for course in courses %}
+                        <option value="{{ course.id }}">{{ course.title }}</option>
+                    {% endfor %}
+                </select>
+                <input type="number" name="question_count" id="quizQuestions" placeholder="Number of Questions" required>
+                <input type="number" name="points" id="quizPoints" placeholder="Points" required>
+                <button type="submit" class="btn-save">Save Quiz</button>
+                <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- CLEAN DATA PASSING -->
+    <script id="quizzes-data" type="application/json">
+        {
+            {% for quiz in quizzes %}
+            "{{ quiz.id }}": {
+                "title": "{{ quiz.title|escapejs }}",
+                "description": "{{ quiz.description|default:''|escapejs }}",
+                "difficulty": "{{ quiz.difficulty }}",
+                "course_id": "{{ quiz.course.id|default:'' }}",
+                "questions": {{ quiz.question_count|default:10 }},
+                "points": {{ quiz.points|default:100 }}
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        }
+    </script>
+
+    <script>
+        const quizzesData = JSON.parse(document.getElementById('quizzes-data').textContent);
+
+        function openAddModal() {
+            document.getElementById('modal').style.display = 'flex';
+            document.getElementById('modalTitle').innerText = 'Add New Quiz';
+            document.getElementById('quizForm').action = "{% url 'add_quiz' %}";
+            document.getElementById('quizForm').reset();
+        }
+
+        function openEditModal(id) {
+            const data = quizzesData[id];
+            if (!data) return;
+            document.getElementById('modal').style.display = 'flex';
+            document.getElementById('modalTitle').innerText = 'Edit Quiz';
+            document.getElementById('quizForm').action = `/edit-quiz/${id}/`;
+            document.getElementById('quizTitle').value = data.title;
+            document.getElementById('quizDescription').value = data.description;
+            document.getElementById('quizDifficulty').value = data.difficulty;
+            document.getElementById('quizCourse').value = data.course_id;
+            document.getElementById('quizQuestions').value = data.questions;
+            document.getElementById('quizPoints').value = data.points;
+        }
+
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
+    </script>
+</body>
+</html>

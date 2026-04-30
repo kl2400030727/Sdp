@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - Sustainable Living</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/css/dashboard.css' %}">
+    <style>
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card-admin {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+        .stat-card-admin i {
+            font-size: 2.5rem;
+            color: #2ecc71;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .recent-table {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        .table-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr 100px 100px 100px 150px;
+            background: #2c3e50;
+            color: white;
+            padding: 1rem;
+            font-weight: bold;
+        }
+        .table-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 100px 100px 100px 150px;
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+            align-items: center;
+        }
+        .badge-pass {
+            background: #2ecc71;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 0.8rem;
+        }
+        .badge-fail {
+            background: #e74c3c;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 0.8rem;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2rem 0 1rem;
+        }
+        .view-all {
+            color: #2ecc71;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">{% include 'accounts/sidebar.html' %}</aside>
+        <main class="main-content">
+            <header class="top-header">{% include 'accounts/header.html' %}</header>
+            <div class="content-area">
+                <h1><i class="fas fa-shield-alt" style="color: #2ecc71;"></i> Admin Dashboard</h1>
+                <p>Welcome, {{ user.username }}! Manage courses, quizzes, and view analytics.</p>
+
+                <!-- Statistics Cards -->
+                <div class="admin-stats">
+                    <div class="stat-card-admin">
+                        <i class="fas fa-book"></i>
+                        <div class="stat-number" id="courseCount">0</div>
+                        <p>Total Courses</p>
+                    </div>
+                    <div class="stat-card-admin">
+                        <i class="fas fa-question-circle"></i>
+                        <div class="stat-number" id="quizCount">0</div>
+                        <p>Total Quizzes</p>
+                    </div>
+                    <div class="stat-card-admin">
+                        <i class="fas fa-users"></i>
+                        <div class="stat-number" id="userCount">0</div>
+                        <p>Total Users</p>
+                    </div>
+                    <div class="stat-card-admin">
+                        <i class="fas fa-trophy"></i>
+                        <div class="stat-number" id="challengeCount">0</div>
+                        <p>Challenges</p>
+                    </div>
+                </div>
+
+                <!-- Quiz Results Section -->
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-bar"></i> Recent Quiz Attempts</h2>
+                    <a href="{% url 'quiz_results' %}" class="view-all">View All →</a>
+                </div>
+
+                <div class="recent-table">
+                    <div class="table-header">
+                        <div>User</div>
+                        <div>Quiz</div>
+                        <div>Score</div>
+                        <div>%</div>
+                        <div>Points</div>
+                        <div>Date</div>
+                    </div>
+                    <div id="quizResultsList">
+                        <div class="table-row">
+                            <div colspan="6" style="text-align: center;">Loading...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Load stats
+        fetch('/api/stats/')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('courseCount').innerText = data.courses;
+                document.getElementById('quizCount').innerText = data.quizzes;
+                document.getElementById('userCount').innerText = data.users;
+                document.getElementById('challengeCount').innerText = data.challenges;
+            });
+
+        // Load quiz results
+        fetch('/api/quiz-results/')
+            .then(res => res.json())
+            .then(data => {
+                let html = '';
+                data.forEach(attempt => {
+                    const passedClass = attempt.passed ? 'badge-pass' : 'badge-fail';
+                    const passedText = attempt.passed ? 'Passed' : 'Failed';
+                    html += `
+                        <div class="table-row">
+                            <div>${attempt.username}</div>
+                            <div>${attempt.quiz_title}</div>
+                            <div>${attempt.score}/${attempt.total}</div>
+                            <div><span class="${passedClass}">${attempt.percentage}%</span></div>
+                            <div>${attempt.points_earned}</div>
+                            <div>${attempt.date}</div>
+                        </div>
+                    `;
+                });
+                document.getElementById('quizResultsList').innerHTML = html || '<div class="table-row"><div colspan="6">No quiz attempts yet</div></div>';
+            });
+    </script>
+</body>
+</html>

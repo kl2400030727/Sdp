@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Achievements & Certificates - Sustainable Living</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/css/dashboard.css' %}">
+    <style>
+        .badge-locked { opacity: 0.5; filter: grayscale(1); }
+        .badge-card { text-align: center; transition: transform 0.3s ease; }
+        .badge-card:hover { transform: translateY(-5px); }
+        .badge-icon { background: #ffd700; border-radius: 50%; width: 100px; height: 100px; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; }
+        .badge-icon i { font-size: 3rem; }
+        
+        .certificate-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 2rem;
+        }
+        .certificate-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        .certificate-card:hover {
+            border-color: var(--primary-green);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+        .cert-icon {
+            font-size: 4rem;
+            color: #3498db;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">{% include 'accounts/sidebar.html' %}</aside>
+        <main class="main-content">
+            <header class="top-header">{% include 'accounts/header.html' %}</header>
+            <div class="content-area">
+                <h1><i class="fas fa-medal" style="color: var(--primary-green);"></i> Achievements & Certificates</h1>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <h3>Current Status</h3>
+                            <div class="stat-number">
+                                {% if profile.total_points >= 1000 %}Eco Warrior
+                                {% elif profile.total_points >= 500 %}Rising Star
+                                {% else %}Green Learner{% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <h3>Total Points</h3>
+                            <div class="stat-number">{{ profile.total_points }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 style="margin-top: 3rem;"><i class="fas fa-award"></i> Your Badges</h2>
+                <div class="courses-grid" style="margin-top: 1rem;">
+                    <!-- Badge 1 -->
+                    <div class="course-card badge-card {% if profile.total_points < 100 %}badge-locked{% endif %}">
+                        <div class="badge-icon"><i class="fas fa-seedling"></i></div>
+                        <div class="course-content">
+                            <h3>🌱 Green Beginner</h3>
+                            <p>Reach 100 points</p>
+                            {% if profile.total_points >= 100 %}
+                                <span class="badge-green">Earned!</span>
+                            {% else %}
+                                <span class="badge-green">🔒 {{ profile.total_points }}/100</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Badge 2 -->
+                    <div class="course-card badge-card {% if profile.total_points < 500 %}badge-locked{% endif %}">
+                        <div class="badge-icon"><i class="fas fa-trophy"></i></div>
+                        <div class="course-content">
+                            <h3>🏆 Challenge Master</h3>
+                            <p>Reach 500 points</p>
+                            {% if profile.total_points >= 500 %}
+                                <span class="badge-green">Earned!</span>
+                            {% else %}
+                                <span class="badge-green">🔒 {{ profile.total_points }}/500</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Badge 3 -->
+                    <div class="course-card badge-card {% if profile.total_points < 1000 %}badge-locked{% endif %}">
+                        <div class="badge-icon"><i class="fas fa-crown"></i></div>
+                        <div class="course-content">
+                            <h3>👑 Eco King/Queen</h3>
+                            <p>Reach 1000 points</p>
+                            {% if profile.total_points >= 1000 %}
+                                <span class="badge-green">Earned!</span>
+                            {% else %}
+                                <span class="badge-green">🔒 {{ profile.total_points }}/1000</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <h2 style="margin-top: 3rem;"><i class="fas fa-certificate" style="color: #3498db;"></i> Course Certificates</h2>
+                <div class="certificate-grid">
+                    {% for enrollment in completed_enrollments %}
+                    <div class="certificate-card">
+                        <div class="cert-icon"><i class="fas fa-file-certificate"></i></div>
+                        <h3>{{ enrollment.course.title }}</h3>
+                        <p style="color: #666; margin-bottom: 1.5rem;">Completed on {{ enrollment.enrolled_at|date:"M d, Y" }}</p>
+                        <a href="{% url 'generate_certificate' enrollment.id %}" target="_blank" class="btn-continue" style="display: block; text-decoration: none; background: #3498db; color: white;">
+                            <i class="fas fa-download"></i> View Certificate
+                        </a>
+                    </div>
+                    {% empty %}
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; background: #f8f9fa; border-radius: 20px;">
+                        <i class="fas fa-graduation-cap" style="font-size: 3rem; color: #ced4da; margin-bottom: 1rem;"></i>
+                        <p style="color: #adb5bd;">No certificates earned yet. Complete a course to earn one!</p>
+                        <a href="{% url 'courses' %}" style="color: var(--primary-green); text-decoration: none; font-weight: 600;">Browse Courses →</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

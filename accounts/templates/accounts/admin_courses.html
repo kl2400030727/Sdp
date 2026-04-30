@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Courses - Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/css/dashboard.css' %}">
+    <style>
+        .course-item {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .btn-edit {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        .btn-add {
+            background: var(--primary-green);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+        .level-badge {
+            background: #e8f5e9;
+            color: #2ecc71;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">{% include 'accounts/sidebar.html' %}</aside>
+        <main class="main-content">
+            <header class="top-header">{% include 'accounts/header.html' %}</header>
+            <div class="content-area">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h1><i class="fas fa-book" style="color: var(--primary-green);"></i> Manage Courses</h1>
+                    <button class="btn-add" onclick="alert('Add course functionality coming soon!')">
+                        <i class="fas fa-plus"></i> Add New Course
+                    </button>
+                </div>
+                <p>Create, edit, and manage all courses on the platform</p>
+
+                <div id="coursesList">
+                    <div class="course-item">
+                        <div>
+                            <h3>Solar Energy Basics</h3>
+                            <p>Learn how solar panels work and implement solar solutions</p>
+                            <span class="level-badge">Beginner</span> • 4 hours
+                        </div>
+                        <div>
+                            <button class="btn-edit">Edit</button>
+                            <button class="btn-delete">Delete</button>
+                        </div>
+                    </div>
+                    <div class="course-item">
+                        <div>
+                            <h3>Zero Waste Living</h3>
+                            <p>Practical tips to reduce waste and embrace circular economy</p>
+                            <span class="level-badge">Beginner</span> • 3 hours
+                        </div>
+                        <div>
+                            <button class="btn-edit">Edit</button>
+                            <button class="btn-delete">Delete</button>
+                        </div>
+                    </div>
+                    <div class="course-item">
+                        <div>
+                            <h3>Water Conservation</h3>
+                            <p>Techniques to save water and protect this precious resource</p>
+                            <span class="level-badge">Intermediate</span> • 2 hours
+                        </div>
+                        <div>
+                            <button class="btn-edit">Edit</button>
+                            <button class="btn-delete">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

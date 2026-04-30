@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile Settings - Sustainable Living</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/css/dashboard.css' %}">
+    <style>
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .profile-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, var(--primary-green), var(--primary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 3rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .profile-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(46, 204, 113, 0.3);
+        }
+        .avatar-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--gray-border);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-green);
+        }
+        .btn-save {
+            background: var(--primary-green);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            width: 100%;
+        }
+        .btn-save:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+        }
+        .stats-card {
+            background: linear-gradient(135deg, var(--primary-dark), #1a2b3c);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-green);
+        }
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        .message-success {
+            background: #e8f5e9;
+            color: #2ecc71;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .row-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        @media (max-width: 600px) {
+            .row-2col {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">{% include 'accounts/sidebar.html' %}</aside>
+        <main class="main-content">
+            <header class="top-header">{% include 'accounts/header.html' %}</header>
+            <div class="content-area">
+                <div class="profile-container">
+                    <div class="profile-header">
+                        <h1><i class="fas fa-user-circle"></i> Profile Settings</h1>
+                        <p>Manage your personal information and preferences</p>
+                    </div>
+
+                    <!-- Stats Display -->
+                    <div class="stats-card">
+                        <h3><i class="fas fa-chart-line"></i> Your Stats</h3>
+                        <div class="stats-grid">
+                            <div class="stat">
+                                <div class="stat-value">{{ profile.total_points }}</div>
+                                <div class="stat-label">Total Points</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">{{ profile.current_streak }}</div>
+                                <div class="stat-label">Current Streak 🔥</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">{{ profile.longest_streak }}</div>
+                                <div class="stat-label">Longest Streak 🏆</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="message-success">
+                                <i class="fas fa-check-circle"></i> {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <!-- Profile Edit Form -->
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <!-- Profile Picture Section -->
+                        <div class="form-group" style="text-align: center;">
+                            <label>Profile Picture</label>
+                            <div class="profile-avatar" onclick="document.getElementById('id_profile_picture').click();">
+                                {% if profile.profile_picture %}
+                                    <img src="{{ profile.profile_picture.url }}" class="avatar-preview" alt="Profile Picture">
+                                {% else %}
+                                    <i class="fas fa-camera"></i>
+                                {% endif %}
+                            </div>
+                            <input type="file" name="profile_picture" id="id_profile_picture" style="display: none;" accept="image/*">
+                            <small style="color: var(--text-muted);">Click on the circle to upload a photo</small>
+                        </div>
+
+                        <div class="row-2col">
+                            <div class="form-group">
+                                <label><i class="fas fa-user"></i> First Name</label>
+                                <input type="text" name="first_name" value="{{ user.first_name }}">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-user"></i> Last Name</label>
+                                <input type="text" name="last_name" value="{{ user.last_name }}">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-envelope"></i> Email</label>
+                            <input type="email" name="email" value="{{ user.email }}">
+                        </div>
+
+                        <div class="row-2col">
+                            <div class="form-group">
+                                <label><i class="fas fa-phone"></i> Phone Number</label>
+                                <input type="text" name="phone_number" value="{{ profile.phone_number }}">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-city"></i> City</label>
+                                <input type="text" name="city" value="{{ profile.city }}">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-info-circle"></i> Bio</label>
+                            <textarea name="bio" rows="4" placeholder="Tell us about yourself and your sustainability journey...">{{ profile.bio|default:'' }}</textarea>
+                        </div>
+
+                        <button type="submit" class="btn-save">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Preview image before upload
+        document.getElementById('id_profile_picture').addEventListener('change', function(e) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const avatarDiv = document.querySelector('.profile-avatar');
+                avatarDiv.innerHTML = `<img src="${event.target.result}" class="avatar-preview" alt="Profile Picture">`;
+            }
+            reader.readAsDataURL(e.target.files[0]);
+        });
+    </script>
+</body>
+</html>

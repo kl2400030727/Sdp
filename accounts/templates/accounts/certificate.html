@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Certificate of Completion - {{ enrollment.course.title }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2ecc71;
+            --dark: #1a2b3c;
+            --gold: #f1c40f;
+        }
+        body {
+            margin: 0;
+            padding: 40px;
+            font-family: 'Outfit', sans-serif;
+            background: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .certificate-border {
+            background: white;
+            padding: 10px;
+            border: 20px solid var(--dark);
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+        }
+        .certificate-inner {
+            border: 5px solid var(--primary);
+            padding: 60px;
+            text-align: center;
+            width: 800px;
+            position: relative;
+        }
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 2rem;
+        }
+        .logo span { color: var(--primary); }
+        
+        h1 {
+            font-size: 3.5rem;
+            margin: 0;
+            color: var(--dark);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .sub-text {
+            font-size: 1.2rem;
+            color: #666;
+            margin: 1.5rem 0;
+        }
+        .recipient-name {
+            font-family: 'Dancing Script', cursive;
+            font-size: 4.5rem;
+            color: var(--primary);
+            margin: 1rem 0;
+            border-bottom: 2px solid #eee;
+            display: inline-block;
+            padding: 0 40px;
+        }
+        .course-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-top: 1.5rem;
+        }
+        .footer {
+            margin-top: 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .signature {
+            border-top: 2px solid #ddd;
+            width: 200px;
+            padding-top: 10px;
+            font-size: 0.9rem;
+            color: #888;
+        }
+        .stamp {
+            width: 100px;
+            height: 100px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            transform: rotate(-15deg);
+            border: 4px double white;
+            box-shadow: 0 0 0 4px var(--primary);
+        }
+        @media print {
+            body { padding: 0; background: white; }
+            .certificate-border { box-shadow: none; border-width: 15px; }
+            .no-print { display: none; }
+        }
+        .no-print {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <button class="no-print" onclick="window.print()"><i class="fas fa-print"></i> Print or Save as PDF</button>
+
+    <div class="certificate-border">
+        <div class="certificate-inner">
+            <div class="logo">Change<span> by Degrees</span></div>
+            <h1>Certificate</h1>
+            <p class="sub-text">This is to certify that</p>
+            <div class="recipient-name">{{ enrollment.user.first_name }} {{ enrollment.user.last_name|default:"" }}</div>
+            <p class="sub-text">has successfully completed the sustainability course</p>
+            <div class="course-title">{{ enrollment.course.title }}</div>
+            <p class="sub-text" style="font-size: 0.9rem; margin-top: 2rem;">
+                Earned on {{ enrollment.enrolled_at|date:"F d, Y" }} | Points Awarded: {{ enrollment.course.points }}
+            </p>
+
+            <div class="footer">
+                <div class="signature">
+                    <strong>Antigravity AI</strong><br>
+                    Platform Director
+                </div>
+                <div class="stamp">VERIFIED</div>
+                <div class="signature">
+                    <strong>Date: {% now "M d, Y" %}</strong><br>
+                    Issue Date
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

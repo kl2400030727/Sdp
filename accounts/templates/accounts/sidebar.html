@@ -1,0 +1,67 @@
+<div class="sidebar-header">
+    <div class="logo">Change<span> by Degrees</span></div>
+    <div class="user-name">Welcome, {{ user.first_name|default:user.username }}</div>
+</div>
+<nav class="sidebar-nav">
+    {% if user.is_authenticated %}
+        {% if user.is_staff %}
+            <!-- ADMIN SIDEBAR MENU -->
+            <a href="{% url 'admin_dashboard' %}" class="nav-item">
+                <i class="fas fa-shield-alt"></i> Admin Dashboard
+            </a>
+            <a href="{% url 'manage_courses' %}" class="nav-item">
+                <i class="fas fa-book"></i> Manage Courses
+            </a>
+            <a href="{% url 'manage_quizzes' %}" class="nav-item">
+                <i class="fas fa-question-circle"></i> Manage Quizzes
+            </a>
+            <a href="{% url 'manage_challenges' %}" class="nav-item">
+                <i class="fas fa-trophy"></i> Manage Challenges
+            </a>
+            <a href="{% url 'manage_users' %}" class="nav-item">
+                <i class="fas fa-users-cog"></i> Manage Users
+            </a>
+            <a href="{% url 'quiz_results' %}" class="nav-item">
+                <i class="fas fa-chart-bar"></i> Quiz Results
+            </a>
+        {% else %}
+            <!-- REGULAR USER SIDEBAR MENU -->
+            <a href="{% url 'home' %}" class="nav-item">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <!-- For Regular Users -->
+<a href="{% url 'courses' %}" class="nav-item">
+    <i class="fas fa-book-open"></i> My Courses
+</a>
+            <a href="{% url 'challenges' %}" class="nav-item">
+                <i class="fas fa-trophy"></i> Challenges & Quizzes
+            </a>
+            <a href="{% url 'progress' %}" class="nav-item">
+                <i class="fas fa-chart-line"></i> Progress
+            </a>
+            <a href="{% url 'leaderboard' %}" class="nav-item">
+                <i class="fas fa-users"></i> Leaderboard
+            </a>
+            <a href="{% url 'achievements' %}" class="nav-item">
+                <i class="fas fa-medal"></i> Achievements
+            </a>
+            <a href="{% url 'eco_calculator' %}" class="nav-item">
+                <i class="fas fa-leaf"></i> Eco-Score Calculator
+            </a>
+            <a href="{% url 'impact_dashboard' %}" class="nav-item">
+                <i class="fas fa-globe"></i> My Environmental Impact
+            </a>
+        {% endif %}
+        <a href="{% url 'profile_settings' %}" class="nav-item">
+            <i class="fas fa-user-circle"></i> Profile Settings
+        </a>
+        <a href="{% url 'settings' %}" class="nav-item">
+            <i class="fas fa-cog"></i> Account Settings
+        </a>
+        <a href="{% url 'login' %}" class="nav-item" style="margin-top: 2rem; background: rgba(231, 76, 60, 0.15) !important; border-left: 4px solid #e74c3c !important;">
+            <i class="fas fa-sign-out-alt" style="color: #e74c3c !important;"></i>
+            <span style="color: #e74c3c !important;">Logout</span>
+        </a>
+
+    {% endif %}
+</nav>

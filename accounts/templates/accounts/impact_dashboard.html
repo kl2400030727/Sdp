@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Impact Visualization - Sustainable Living</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/css/dashboard.css' %}">
+    <style>
+        .impact-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .chart-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+        .suggestion-card {
+            background: #fff9e6;
+            padding: 1.5rem;
+            border-radius: 20px;
+            border-left: 5px solid #ffc107;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">{% include 'accounts/sidebar.html' %}</aside>
+        <main class="main-content">
+            <header class="top-header">{% include 'accounts/header.html' %}</header>
+            <div class="content-area">
+                <h1>🌍 Your Environmental Impact</h1>
+                <p>Tracking your journey toward a carbon-neutral life.</p>
+
+                <div class="impact-grid">
+                    <div class="chart-card">
+                        <h3>CO₂ Saving Trend (Monthly)</h3>
+                        <canvas id="impactChart" height="200"></canvas>
+                    </div>
+                    
+                    <div class="info-section">
+                        <div class="stat-card" style="margin-bottom: 1.5rem; background: var(--primary-green); color: white;">
+                            <div class="stat-info">
+                                <h3 style="color: rgba(255,255,255,0.8);">Current Eco Score</h3>
+                                <div class="stat-number" style="color: white;">{{ profile.eco_score }}%</div>
+                            </div>
+                        </div>
+
+                        <h3>Suggestions for You</h3>
+                        <div class="suggestion-card">
+                            <h4><i class="fas fa-lightbulb"></i> Quick Tip</h4>
+                            <p>Switching to LED bulbs could improve your score by 5%!</p>
+                        </div>
+                        <div class="suggestion-card" style="background: #e8f5e9; border-left-color: #2ecc71;">
+                            <h4><i class="fas fa-walking"></i> Active Habit</h4>
+                            <p>You've used the metro 3 times this week. Great job!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-header" style="margin-top: 3rem;">
+                    <h2><i class="fas fa-trophy"></i> Milestones Reached</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #e8f0fe; color: #3b82f6;"><i class="fas fa-tree"></i></div>
+                        <div class="stat-info">
+                            <h3>Trees Offset</h3>
+                            <div class="stat-number">12</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #fee8e8; color: #ef4444;"><i class="fas fa-car-side"></i></div>
+                        <div class="stat-info">
+                            <h3>Car KM Reduced</h3>
+                            <div class="stat-number">450 km</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Pass data to JS safely using JSON script tag to avoid IDE errors -->
+    {{ impact.co2_saved|default:0|json_script:"co2-data" }}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const co2Saved = JSON.parse(document.getElementById('co2-data').textContent);
+            const ctx = document.getElementById('impactChart').getContext('2d');
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'CO2 Saved (kg)',
+                        data: [12, 19, 32, 25, 45, co2Saved],
+                        borderColor: '#2ecc71',
+                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Leaderboard - Sustainable Living</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/css/dashboard.css' %}">
+    <style>
+        /* Leaderboard Specific Styles */
+        .leaderboard-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--gray-border);
+            padding-bottom: 0.5rem;
+        }
+
+        .leaderboard-tab {
+            padding: 0.5rem 1.5rem;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .leaderboard-tab:hover {
+            background: var(--primary-light);
+        }
+
+        .leaderboard-tab.active {
+            background: var(--primary-green);
+            color: white;
+        }
+
+        /* Stats Cards */
+        .leaderboard-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, white, #f8f9fa);
+            border-radius: 20px;
+            padding: 1.2rem;
+            text-align: center;
+            border: 1px solid rgba(46, 204, 113, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .stats-card .icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-card .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .stats-card .label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* Main Leaderboard Table */
+        .leaderboard-table {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+
+        .leaderboard-header {
+            display: grid;
+            grid-template-columns: 80px 1fr 120px 120px 100px;
+            background: linear-gradient(135deg, var(--primary-dark), #1a2b3c);
+            color: white;
+            padding: 1rem 1.5rem;
+            font-weight: bold;
+        }
+
+        .leaderboard-row {
+            display: grid;
+            grid-template-columns: 80px 1fr 120px 120px 100px;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--gray-border);
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-row:hover {
+            background: var(--primary-light);
+            transform: scale(1.01);
+        }
+
+        .rank {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .rank-1 .rank { color: #ffd700; }
+        .rank-2 .rank { color: #c0c0c0; }
+        .rank-3 .rank { color: #cd7f32; }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar-small {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        .user-title {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .points {
+            font-weight: bold;
+            color: #f59e0b;
+        }
+
+        .badges {
+            display: flex;
+            gap: 5px;
+        }
+
+        .badge-small {
+            font-size: 1.2rem;
+        }
+
+        .current-user-row {
+            background: linear-gradient(90deg, rgba(46, 204, 113, 0.1), white);
+            border-left: 4px solid var(--primary-green);
+            font-weight: bold;
+        }
+
+        /* Weekly Top Performers */
+        .top-performers {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .top-performer {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .top-performer:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .top-performer.first {
+            background: linear-gradient(135deg, #fff9e6, #fff3cd);
+            border: 2px solid #ffd700;
+        }
+
+        .top-performer.second {
+            background: linear-gradient(135deg, #f5f5f5, #e8e8e8);
+            border: 2px solid #c0c0c0;
+        }
+
+        .top-performer.third {
+            background: linear-gradient(135deg, #fdf5e6, #f5e6d3);
+            border: 2px solid #cd7f32;
+        }
+
+        .crown {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .performer-avatar {
+            width: 70px;
+            height: 70px;
+            background: var(--primary-green);
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .performer-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .performer-points {
+            color: #f59e0b;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .leaderboard-header, .leaderboard-row {
+                grid-template-columns: 60px 1fr 80px;
+                gap: 0.5rem;
+            }
+            .leaderboard-header div:nth-child(4), .leaderboard-row div:nth-child(4),
+            .leaderboard-header div:nth-child(5), .leaderboard-row div:nth-child(5) {
+                display: none;
+            }
+            .leaderboard-stats, .top-performers {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">{% include 'accounts/sidebar.html' %}</aside>
+        <main class="main-content">
+            <header class="top-header">{% include 'accounts/header.html' %}</header>
+            <div class="content-area">
+                <h1><i class="fas fa-trophy" style="color: var(--primary-green);"></i> Community Leaderboard</h1>
+                <p style="margin-bottom: 2rem;">Compete with learners worldwide and climb the ranks!</p>
+
+                <!-- Leaderboard Tabs -->
+                <div class="leaderboard-tabs">
+                    <div class="leaderboard-tab active">🏆 Global Rank</div>
+                    <div class="leaderboard-tab">📅 Weekly Top</div>
+                    <div class="leaderboard-tab">🌱 Monthly Stars</div>
+                    <div class="leaderboard-tab">👥 Friends</div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="leaderboard-stats">
+                    <div class="stats-card">
+                        <div class="icon">📊</div>
+                        <div class="value">#4</div>
+                        <div class="label">Your Global Rank</div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="icon">⭐</div>
+                        <div class="value">1,250</div>
+                        <div class="label">Total Points</div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="icon">🏅</div>
+                        <div class="value">8</div>
+                        <div class="label">Badges Earned</div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="icon">🔥</div>
+                        <div class="value">7</div>
+                        <div class="label">Day Streak</div>
+                    </div>
+                </div>
+
+                <!-- Top 3 Performers -->
+                <div class="top-performers">
+                    {% for p in top_profiles|slice:":3" %}
+                    <div class="top-performer {% if forloop.counter == 1 %}first{% elif forloop.counter == 2 %}second{% else %}third{% endif %}">
+                        <div class="crown">
+                            {% if forloop.counter == 1 %}👑{% elif forloop.counter == 2 %}🥈{% else %}🥉{% endif %}
+                        </div>
+                        <div class="performer-avatar">{{ p.user.first_name|first|default:p.user.username|first }}</div>
+                        <div class="performer-name">{{ p.user.username }}</div>
+                        <div class="performer-points">{{ p.total_points }} pts</div>
+                        <div class="badges">🏅</div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+
+                <!-- Full Leaderboard Table -->
+                <div class="leaderboard-table">
+                    <div class="leaderboard-header">
+                        <div>Rank</div>
+                        <div>User</div>
+                        <div>Points</div>
+                        <div>Badges</div>
+                        <div>Streak</div>
+                    </div>
+
+                    {% for p in top_profiles %}
+                    <div class="leaderboard-row {% if p.user == request.user %}current-user-row{% endif %} rank-{{ forloop.counter }}">
+                        <div class="rank">
+                            {% if forloop.counter == 1 %}🥇{% elif forloop.counter == 2 %}🥈{% elif forloop.counter == 3 %}🥉{% endif %}
+                            {{ forloop.counter }}
+                        </div>
+                        <div class="user-info">
+                            <div class="user-avatar-small">{{ p.user.first_name|first|default:p.user.username|first }}</div>
+                            <div>
+                                <div class="user-name">{% if p.user == request.user %}You ({{ p.user.username }}){% else %}{{ p.user.username }}{% endif %}</div>
+                                <div class="user-title">
+                                    {% if p.total_points > 1000 %}🌱 Eco Warrior
+                                    {% elif p.total_points > 500 %}🌟 Rising Star
+                                    {% else %}🌿 Green Learner{% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="points">{{ p.total_points }}</div>
+                        <div class="badges">🏅</div>
+                        <div>{{ p.current_streak }}🔥</div>
+                    </div>
+                    {% empty %}
+                    <div class="leaderboard-row">
+                        <div colspan="5" style="text-align: center;">No users found.</div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+
+                <!-- Your Performance Insights -->
+                <div class="course-card" style="background: linear-gradient(135deg, #1a2b3c, #2c3e50); color: white;">
+                    <div class="course-content">
+                        <h3 style="color: white;"><i class="fas fa-chart-line"></i> Your Performance Insights</h3>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
+                            <div>
+                                <div style="font-size: 0.8rem; opacity: 0.8;">Points to next rank</div>
+                                <div style="font-size: 1.5rem; font-weight: bold;">640</div>
+                                <div style="font-size: 0.8rem;">to reach #3</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.8rem; opacity: 0.8;">Weekly gain</div>
+                                <div style="font-size: 1.5rem; font-weight: bold; color: #f59e0b;">+450</div>
+                                <div style="font-size: 0.8rem;">this week</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.8rem; opacity: 0.8;">Completed challenges</div>
+                                <div style="font-size: 1.5rem; font-weight: bold; color: #2ecc71;">8</div>
+                                <div style="font-size: 0.8rem;">total</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Tab switching functionality
+        document.querySelectorAll('.leaderboard-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.leaderboard-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                // You can add logic here to load different leaderboard data
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Settings - Sustainable Living</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/css/dashboard.css' %}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">{% include 'accounts/sidebar.html' %}</aside>
+        <main class="main-content">
+            <header class="top-header">{% include 'accounts/header.html' %}</header>
+            <div class="content-area">
+                <h1><i class="fas fa-cog" style="color: var(--primary-green);"></i> Account Settings</h1>
+
+                <div class="course-card" style="margin-top: 2rem;">
+                    <div class="course-content">
+                        <h3>Profile Information</h3>
+                        <form method="POST" style="margin-top: 1rem;">
+                            {% csrf_token %}
+                            <div style="margin-bottom: 1rem;">
+                                <label>First Name</label>
+                                <input type="text" name="first_name" value="{{ user.first_name }}" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ddd;">
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <label>Last Name</label>
+                                <input type="text" name="last_name" value="{{ user.last_name }}" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ddd;">
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <label>Email</label>
+                                <input type="email" name="email" value="{{ user.email }}" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ddd;">
+                            </div>
+                            <button type="submit" style="background: var(--primary-green); color: white; padding: 10px 30px; border: none; border-radius: 25px; cursor: pointer;">Update Profile</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

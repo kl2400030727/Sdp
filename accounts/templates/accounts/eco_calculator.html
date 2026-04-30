@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Eco-Score Calculator - Sustainable Living</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/css/dashboard.css' %}">
+    <style>
+        .calc-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: white;
+            padding: 3rem;
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+        }
+        .form-group {
+            margin-bottom: 2rem;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            color: #2d3748;
+        }
+        input, select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #edf2f7;
+            border-radius: 15px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        input:focus {
+            border-color: var(--primary-green);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.1);
+        }
+        .btn-calc {
+            background: linear-gradient(135deg, var(--primary-green), #27ae60);
+            color: white;
+            border: none;
+            padding: 1.2rem;
+            width: 100%;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-calc:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(46, 204, 113, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">{% include 'accounts/sidebar.html' %}</aside>
+        <main class="main-content">
+            <header class="top-header">{% include 'accounts/header.html' %}</header>
+            <div class="content-area">
+                <div class="calc-container">
+                    <h1>🌱 Eco-Score Calculator</h1>
+                    <p style="color: var(--text-muted); margin-bottom: 2.5rem;">Calculate your environmental footprint and get personalized suggestions for a greener life.</p>
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label><i class="fas fa-bolt"></i> Monthly Electricity Usage (kWh)</label>
+                            <input type="number" name="electricity" placeholder="e.g. 250" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label><i class="fas fa-car"></i> Primary Mode of Transport</label>
+                            <select name="transport">
+                                <option value="car">Private Car</option>
+                                <option value="bus">Public Bus</option>
+                                <option value="metro">Metro / Train</option>
+                                <option value="bike">Bicycle / Walking</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label><i class="fas fa-road"></i> Average KM Traveled per Month</label>
+                            <input type="number" name="km" placeholder="e.g. 500" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label><i class="fas fa-utensils"></i> Diet Type</label>
+                            <select name="diet">
+                                <option value="meat">Meat Heavy</option>
+                                <option value="balanced">Balanced</option>
+                                <option value="veg">Vegetarian</option>
+                                <option value="vegan">Vegan</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn-calc">Calculate My Impact →</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

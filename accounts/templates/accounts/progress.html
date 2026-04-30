@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Progress - Sustainable Living</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/css/dashboard.css' %}">
+    <style>
+        /* Progress Page Specific Styles */
+        .progress-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .progress-stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-green);
+        }
+
+        .progress-stat-card:nth-child(2)::before { background: #f59e0b; }
+        .progress-stat-card:nth-child(3)::before { background: #3b82f6; }
+        .progress-stat-card:nth-child(4)::before { background: #ef4444; }
+
+        .progress-stat-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 1.8rem;
+        }
+
+        .progress-stat-card:nth-child(1) .progress-stat-icon { background: #e8f5e9; color: #2ecc71; }
+        .progress-stat-card:nth-child(2) .progress-stat-icon { background: #fef3e8; color: #f59e0b; }
+        .progress-stat-card:nth-child(3) .progress-stat-icon { background: #e8f0fe; color: #3b82f6; }
+        .progress-stat-card:nth-child(4) .progress-stat-icon { background: #fee8e8; color: #ef4444; }
+
+        .progress-stat-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+
+        .progress-stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .progress-stat-change {
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .positive-change { color: #2ecc71; }
+        .negative-change { color: #ef4444; }
+
+        /* Circular Progress */
+        .circular-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .circular-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .circular-progress {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 1rem;
+            position: relative;
+        }
+
+        .circular-progress svg {
+            transform: rotate(-90deg);
+        }
+
+        .circular-progress circle {
+            fill: none;
+            stroke-width: 8;
+        }
+
+        .circular-progress .bg-circle {
+            stroke: #e9ecef;
+        }
+
+        .circular-progress .progress-circle {
+            stroke: var(--primary-green);
+            stroke-linecap: round;
+            transition: stroke-dasharray 0.5s ease;
+        }
+
+        .circular-progress .percentage-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        /* Course Progress List */
+        .course-progress-list {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .course-progress-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .course-progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .course-progress-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .course-progress-title i {
+            color: var(--primary-green);
+            width: 24px;
+        }
+
+        .course-progress-percent {
+            color: var(--primary-green);
+            font-weight: bold;
+        }
+
+        .course-progress-bar {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 10px;
+            overflow: hidden;
+        }
+
+        .course-progress-fill {
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        /* Activity Timeline */
+        .activity-timeline {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .timeline-icon {
+            width: 40px;
+            height: 40px;
+            background: #e8f5e9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2ecc71;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-time {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Badges Section */
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .badge-item {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .badge-item.earned {
+            background: linear-gradient(135deg, #fff9e6, #fff3cd);
+            border: 1px solid #ffc107;
+        }
+
+        .badge-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .badge-name {
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .badge-locked {
+            opacity: 0.4;
+            filter: grayscale(0.5);
+        }
+
+        @media (max-width: 768px) {
+            .progress-stats-grid, .circular-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">{% include 'accounts/sidebar.html' %}</aside>
+        <main class="main-content">
+            <header class="top-header">{% include 'accounts/header.html' %}</header>
+            <div class="content-area">
+                <h1><i class="fas fa-chart-line" style="color: var(--primary-green);"></i> My Progress Dashboard</h1>
+                <p style="margin-bottom: 2rem;">Track your learning journey and achievements</p>
+
+                <!-- Stats Cards -->
+                <div class="progress-stats-grid">
+                    <div class="progress-stat-card">
+                        <div class="progress-stat-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="progress-stat-value">{{ quiz_attempts.count }}</div>
+                        <div class="progress-stat-label">Quizzes Attempted</div>
+                    </div>
+                    <div class="progress-stat-card">
+                        <div class="progress-stat-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="progress-stat-value">{{ profile.total_points }}</div>
+                        <div class="progress-stat-label">Total Points</div>
+                    </div>
+                    <div class="progress-stat-card">
+                        <div class="progress-stat-icon">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <div class="progress-stat-value">{{ profile.current_streak }}</div>
+                        <div class="progress-stat-label">Day Streak</div>
+                    </div>
+                    <div class="progress-stat-card">
+                        <div class="progress-stat-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="progress-stat-value">{{ quiz_attempts.filter.passed.count|default:0 }}</div>
+                        <div class="progress-stat-label">Quizzes Passed</div>
+                    </div>
+                </div>
+
+
+                <!-- Circular Progress Overview -->
+                <div class="circular-grid">
+                    <div class="circular-card">
+                        <div class="circular-progress">
+                            <svg width="150" height="150">
+                                <circle class="bg-circle" cx="75" cy="75" r="65" stroke="#e9ecef" fill="none" stroke-width="8"/>
+                                <circle class="progress-circle" cx="75" cy="75" r="65" stroke="#2ecc71" fill="none" stroke-width="8"
+                                        stroke-dasharray="408" stroke-dashoffset="224"/>
+                            </svg>
+                            <div class="percentage-text">45%</div>
+                        </div>
+                        <h4>Overall Progress</h4>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">4 of 12 courses</p>
+                    </div>
+                    <div class="circular-card">
+                        <div class="circular-progress">
+                            <svg width="150" height="150">
+                                <circle class="bg-circle" cx="75" cy="75" r="65" stroke="#e9ecef" fill="none" stroke-width="8"/>
+                                <circle class="progress-circle" cx="75" cy="75" r="65" stroke="#f59e0b" fill="none" stroke-width="8"
+                                        stroke-dasharray="408" stroke-dashoffset="326"/>
+                            </svg>
+                            <div class="percentage-text">20%</div>
+                        </div>
+                        <h4>Challenges Completed</h4>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">8 of 40 challenges</p>
+                    </div>
+                    <div class="circular-card">
+                        <div class="circular-progress">
+                            <svg width="150" height="150">
+                                <circle class="bg-circle" cx="75" cy="75" r="65" stroke="#e9ecef" fill="none" stroke-width="8"/>
+                                <circle class="progress-circle" cx="75" cy="75" r="65" stroke="#3b82f6" fill="none" stroke-width="8"
+                                        stroke-dasharray="408" stroke-dashoffset="326"/>
+                            </svg>
+                            <div class="percentage-text">20%</div>
+                        </div>
+                        <h4>Quizzes Passed</h4>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">2 of 10 quizzes</p>
+                    </div>
+                </div>
+
+                <!-- Course Progress Section -->
+                <div class="section-header">
+                    <h2><i class="fas fa-book"></i> Course Progress</h2>
+                </div>
+                <div class="course-progress-list">
+                    <div class="course-progress-item">
+                        <div class="course-progress-header">
+                            <div class="course-progress-title">
+                                <i class="fas fa-solar-panel"></i> Solar Energy Basics
+                            </div>
+                            <div class="course-progress-percent">75%</div>
+                        </div>
+                        <div class="course-progress-bar">
+                            <div class="course-progress-fill" style="width: 75%"></div>
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">
+                            <i class="fas fa-check-circle" style="color: #2ecc71;"></i> 3/4 modules completed
+                        </div>
+                    </div>
+                    <div class="course-progress-item">
+                        <div class="course-progress-header">
+                            <div class="course-progress-title">
+                                <i class="fas fa-recycle"></i> Zero Waste Living
+                            </div>
+                            <div class="course-progress-percent">40%</div>
+                        </div>
+                        <div class="course-progress-bar">
+                            <div class="course-progress-fill" style="width: 40%"></div>
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">
+                            <i class="fas fa-play-circle" style="color: #f59e0b;"></i> 2/5 modules completed
+                        </div>
+                    </div>
+                    <div class="course-progress-item">
+                        <div class="course-progress-header">
+                            <div class="course-progress-title">
+                                <i class="fas fa-water"></i> Water Conservation
+                            </div>
+                            <div class="course-progress-percent">20%</div>
+                        </div>
+                        <div class="course-progress-bar">
+                            <div class="course-progress-fill" style="width: 20%"></div>
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">
+                            <i class="fas fa-lock" style="color: #ef4444;"></i> 1/4 modules completed
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Timeline -->
+                <div class="section-header">
+                    <h2><i class="fas fa-history"></i> Recent Activity</h2>
+                </div>
+                <div class="activity-timeline">
+                    {% for activity in activities %}
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            {% if activity.activity_type == 'login' %}<i class="fas fa-sign-in-alt"></i>
+                            {% elif activity.activity_type == 'quiz_pass' %}<i class="fas fa-check-circle"></i>
+                            {% elif activity.activity_type == 'points_earned' %}<i class="fas fa-plus-circle"></i>
+                            {% else %}<i class="fas fa-info-circle"></i>{% endif %}
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">{{ activity.description }}</div>
+                            <div class="timeline-time">{{ activity.created_at|timesince }} ago • +{{ activity.points_earned }} points</div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p style="padding: 1rem; text-align: center;">No activity recorded yet.</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Badges & Achievements -->
+                <div class="section-header">
+                    <h2><i class="fas fa-medal"></i> Badges & Achievements</h2>
+                    <a href="{% url 'achievements' %}" class="view-all">View All →</a>
+                </div>
+                <div class="badges-grid">
+                    <div class="badge-item earned">
+                        <div class="badge-icon">🌱</div>
+                        <div class="badge-name">Green Beginner</div>
+                    </div>
+                    <div class="badge-item earned">
+                        <div class="badge-icon">☀️</div>
+                        <div class="badge-name">Solar Enthusiast</div>
+                    </div>
+                    <div class="badge-item">
+                        <div class="badge-icon">♻️</div>
+                        <div class="badge-name">Zero Waste Hero</div>
+                    </div>
+                    <div class="badge-item">
+                        <div class="badge-icon">🏆</div>
+                        <div class="badge-name">Challenge Master</div>
+                    </div>
+                    <div class="badge-item">
+                        <div class="badge-icon">📚</div>
+                        <div class="badge-name">Knowledge Seeker</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
