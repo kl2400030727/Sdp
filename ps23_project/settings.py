@@ -27,6 +27,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']  # Allows all domains, or specify ['ksnehitha.pythonanywhere.com']
 
+CSRF_TRUSTED_ORIGINS = ['https://ksnehitha.pythonanywhere.com']
+
+
 
 
 # Application definition
