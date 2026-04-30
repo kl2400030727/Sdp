@@ -25,7 +25,8 @@ SECRET_KEY = 'django-insecure-8tf0s_()z#h_b%!lkqn1+em%ncq(gr4jo+=c%qp+5hw4=du_y1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']  # Allows all domains, or specify ['ksnehitha.pythonanywhere.com']
+
 
 
 # Application definition
@@ -73,16 +74,26 @@ WSGI_APPLICATION = 'ps23_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ps23_db',
-        'USER': 'postgres',
-        'PASSWORD': '2404401',
-        'HOST': 'localhost',
-        'PORT': '5432',
+import sys
+if 'pythonanywhere' in os.environ.get('USER', ''):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'ps23_db',
+            'USER': 'postgres',
+            'PASSWORD': '2404401',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
+
 
 
 # Password validation
@@ -124,6 +135,8 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 
 # Media files (Profile pictures)
 MEDIA_URL = '/media/'
