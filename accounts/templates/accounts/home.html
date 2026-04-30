@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sustainable Living</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    {% load static custom_filters %}
+    <link rel="stylesheet" href="{% static 'accounts/css/dashboard.css' %}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">{% include 'accounts/sidebar.html' %}</aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">{% include 'accounts/header.html' %}</header>
+
+            <div class="content-area">
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <h3>Quizzes Passed</h3>
+                            <div class="stat-number">{{ courses_completed }}</div>
+                        </div>
+                        <div class="stat-icon"><i class="fas fa-graduation-cap"></i></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <h3>Challenges Won</h3>
+                            <div class="stat-number">{{ challenges_won }}</div>
+                        </div>
+                        <div class="stat-icon"><i class="fas fa-trophy"></i></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <h3>Total Points</h3>
+                            <div class="stat-number">{{ profile.total_points }}</div>
+                        </div>
+                        <div class="stat-icon"><i class="fas fa-star"></i></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <h3>Day Streak</h3>
+                            <div class="stat-number">{{ profile.current_streak }} 🔥</div>
+                        </div>
+                        <div class="stat-icon"><i class="fas fa-fire"></i></div>
+                    </div>
+                </div>
+                
+                <div class="stats-grid" style="margin-top: 1rem;">
+                    <!-- Daily Challenge Card -->
+                    <div class="stat-card" style="grid-column: span 1; background: #e8f5e9; border-left: 5px solid #2ecc71;">
+                        <div class="stat-info">
+                            <h3 style="color: #27ae60;"><i class="fas fa-bullseye"></i> Daily Challenge</h3>
+                            {% if daily_challenge %}
+                                <p style="font-weight: 600; margin-top: 0.5rem;">{{ daily_challenge.title }}</p>
+                                <p style="font-size: 0.9rem; color: #666;">{{ daily_challenge.description|truncatewords:10 }}</p>
+                                <a href="{% url 'challenges' %}" class="btn-continue" style="margin-top: 10px; font-size: 0.8rem; padding: 5px 15px; width: auto; display: inline-block; text-decoration: none;">Join Now →</a>
+                            {% else %}
+                                <p style="margin-top: 0.5rem; color: #666;">No active challenge today. Check back tomorrow!</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Daily Tip Card -->
+                    <div class="stat-card" style="grid-column: span 1; background: #fff9e6; border-left: 5px solid #ffc107;">
+                        <div class="stat-info">
+                            <h3 style="color: #856404;"><i class="fas fa-lightbulb"></i> Daily Eco Tip</h3>
+                            <p style="font-size: 0.95rem; color: #533f03; margin-top: 0.5rem;">
+                                {% if daily_tip %}
+                                    {{ daily_tip.content }}
+                                {% else %}
+                                    Small changes make a big difference! Start today by reducing plastic use.
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Community Impact Card -->
+                    <div class="stat-card" style="grid-column: span 2; background: #e0f2f1; border-left: 5px solid #009688;">
+                        <div class="stat-info">
+                            <h3 style="color: #00796b;"><i class="fas fa-users"></i> Community Impact</h3>
+                            <div style="display: flex; gap: 2rem; margin-top: 0.5rem;">
+                                <div>
+                                    <div class="stat-number" style="font-size: 1.1rem; color: #004d40;">{{ community_impact.total_co2|default:0|floatformat:1 }} kg</div>
+                                    <small style="color: #00796b;">Total CO₂ Saved</small>
+                                </div>
+                                <div>
+                                    <div class="stat-number" style="font-size: 1.1rem; color: #004d40;">{{ community_impact.total_water|default:0|floatformat:0 }} L</div>
+                                    <small style="color: #00796b;">Total Water Saved</small>
+                                </div>
+                                <div style="margin-left: auto; text-align: right;">
+                                    <span style="background: #009688; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem;">Global Progress</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recommended Courses -->
+                <div class="section-header">
+                    <h2><i class="fas fa-graduation-cap"></i> Recommended for You</h2>
+                    <a href="{% url 'courses' %}" class="view-all">Explore All →</a>
+                </div>
+                <div class="courses-grid">
+                    {% for course in featured_courses %}
+                    <div class="course-card">
+                        <div class="course-image"><i class="{{ course.icon }}"></i></div>
+                        <div class="course-content">
+                            <span class="badge-green">{{ course.get_level_display }}</span>
+                            <h3 class="course-title">{{ course.title }}</h3>
+                            <p>{{ course.description|truncatewords:15 }}</p>
+                            <div class="course-meta">
+                                <span><i class="far fa-clock"></i> {{ course.duration_hours }}h</span>
+                                <span><i class="fas fa-star"></i> {{ course.points }} pts</span>
+                            </div>
+                            
+                            {% if course.id in enrolled_courses %}
+                                {% with progress=enrollment_progress|dict_key:course.id %}
+                                <div class="course-progress-bar" style="height: 6px; margin-top: 10px;">
+                                    <div class="course-progress-fill" style="width: {{ progress|default:0 }}%;"></div>
+                                </div>
+                                <div style="font-size: 0.75rem; color: #666; margin-top: 4px;">{{ progress|default:0 }}% Complete</div>
+                                {% endwith %}
+                            {% endif %}
+                            <div style="margin-top: 1rem;">
+                                {% if course.id in enrolled_courses %}
+                                    <a href="{% url 'course_detail' course.id %}" class="btn-continue" style="display: block; text-align: center; text-decoration: none;">Continue Learning →</a>
+                                {% else %}
+                                    <a href="{% url 'enroll_course' course.id %}" class="btn-continue" style="display: block; text-align: center; text-decoration: none; background: var(--primary-green); color: white;">Enroll Now →</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p>No courses available at the moment.</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Impact Visualization -->
+                <div class="section-header" style="margin-top: 3rem;">
+                    <h2><i class="fas fa-chart-line"></i> Your Eco-Impact</h2>
+                    <a href="{% url 'impact_dashboard' %}" class="view-all">View Details →</a>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card" style="background: linear-gradient(135deg, #1a2b3c, #2c3e50); color: white;">
+                        <div class="stat-info">
+                            <h3 style="color: #a0aec0;">CO₂ Saved</h3>
+                            <div class="stat-number" style="color: white;">{{ impact.co2_saved|default:0 }} kg</div>
+                            <p style="font-size: 0.8rem; opacity: 0.7;">Equivalent to 5 trees planted!</p>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #2ecc71, #27ae60); color: white;">
+                        <div class="stat-info">
+                            <h3 style="color: rgba(255,255,255,0.8);">Water Saved</h3>
+                            <div class="stat-number" style="color: white;">{{ impact.water_saved|default:0 }} L</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <h3>Eco Score</h3>
+                            <div class="stat-number">{{ profile.eco_score }}%</div>
+                            <div class="course-progress-bar" style="margin-top: 10px;">
+                                <div class="course-progress-fill" style="width: {{ profile.eco_score|default:0 }}%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Featured Video -->
+                {% if featured_video %}
+                <div class="section-header" style="margin-top: 3rem;">
+                    <h2><i class="fab fa-youtube" style="color: #ff0000;"></i> Featured Learning Video</h2>
+                    <a href="{% url 'course_detail' featured_video.course.id %}" class="view-all">Watch Full Course →</a>
+                </div>
+                <div class="course-card" style="padding: 0; overflow: hidden; display: block;">
+                    <div style="aspect-ratio: 16/9; width: 100%; background: #000;">
+                        <iframe width="100%" height="100%" src="{{ featured_video.video_url }}" style="border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                    </div>
+                    <div style="padding: 1.5rem;">
+                        <span class="badge-green">{{ featured_video.course.title }}</span>
+                        <h3 style="margin-top: 0.5rem;">{{ featured_video.title }}</h3>
+                        <p style="color: #6c757d;">{{ featured_video.description|truncatewords:20 }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.getElementById('searchInput')?.addEventListener('keyup', function() {
+            let searchText = this.value.toLowerCase();
+            let courses = document.querySelectorAll('.course-card');
+            courses.forEach(course => {
+                let title = course.querySelector('.course-title')?.innerText.toLowerCase();
+                if (title) {
+                    course.style.display = title.includes(searchText) ? '' : 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
