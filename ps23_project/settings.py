@@ -75,7 +75,10 @@ WSGI_APPLICATION = 'ps23_project.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 import sys
-if 'pythonanywhere' in os.environ.get('USER', ''):
+import os
+
+# Check if we're on PythonAnywhere or running via the specific user
+if 'PYTHONANYWHERE_DOMAIN' in os.environ or os.environ.get('USER') == 'ksnehitha':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
